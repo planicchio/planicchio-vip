@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planicchio IT - VIP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        .loader { border-top-color: #FF8C00; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 pb-10">
+    <header class="bg-[#FF8C00] text-white p-6 text-center shadow-lg sticky top-0 z-50">
+        <h1 class="text-2xl font-bold">💎 Planicchio VIP</h1>
+        <p class="text-sm opacity-90">Accesso Completo</p>
+    </header>
+
+    <div id="loading" class="flex flex-col items-center justify-center mt-20">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+        <p class="text-gray-600">Caricamento contenuti VIP...</p>
+    </div>
+
+    <main class="p-4 max-w-md mx-auto hidden" id="app-content">
+        <div id="slang-list"></div>
+    </main>
+
+    <script>
+        const csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
+
+        function init() {
+            Papa.parse(csv_url, { download: true, header: true, complete: showInfo });
+        }
+
+        function showInfo(results) {
+            const listContainer = document.getElementById('slang-list');
+            results.data.forEach((row) => {
+                if (!row.English) return;
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl shadow-sm p-5 mb-5 border border-gray-100";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-bold text-[#FF8C00]">${row.English}</h2>
+                            <p class="text-gray-500 italic text-sm mb-2">${row.Traduzione || ''}</p>
+                        </div>
+                        <button onclick="playAudio('${row.English}')" class="bg-orange-50 p-3 rounded-full text-[#FF8C00]">🔊</button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1 mb-2">${row['Spiegazione AI'] || ''}</p>
+                    <p class="mt-2 text-gray-700 italic border-l-2 border-orange-200 pl-3">"${row.Esempio || ''}"</p>
+                `;
+                listContainer.appendChild(card);
+            });
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+        }
+
+        function playAudio(word) {
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(word)}`;
+            new Audio(url).play();
+        }
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
