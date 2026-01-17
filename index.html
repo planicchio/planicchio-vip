@@ -3,64 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planicchio IT - VIP</title>
+    <title>Planicchio VIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        .loader { border-top-color: #FF8C00; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .category-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
-<body class="bg-gray-50 pb-10">
-    <header class="bg-[#FF8C00] text-white p-6 text-center shadow-lg sticky top-0 z-50">
-        <h1 class="text-2xl font-bold">💎 Planicchio VIP</h1>
-        <p class="text-sm opacity-90">Accesso Completo</p>
-    </header>
-
-    <div id="loading" class="flex flex-col items-center justify-center mt-20">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <p class="text-gray-600">Caricamento contenuti VIP...</p>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold text-center mb-6">Planicchio VIP 🚀</h1>
+        <div id="container" class="space-y-4">
+            </div>
     </div>
 
-    <main class="p-4 max-w-md mx-auto hidden" id="app-content">
-        <div id="slang-list"></div>
-    </main>
-
     <script>
-        const csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
+        // COLOQUE O SEU LINK DA PLANILHA (CSV) ENTRE AS ASPAS ABAIXO
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
 
-        function init() {
-            Papa.parse(csv_url, { download: true, header: true, complete: showInfo });
-        }
+        async function loadContent() {
+            const response = await fetch(SHEET_URL);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1);
+            const container = document.getElementById('container');
 
-        function showInfo(results) {
-            const listContainer = document.getElementById('slang-list');
-            results.data.forEach((row) => {
-                if (!row.English) return;
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl shadow-sm p-5 mb-5 border border-gray-100";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-xl font-bold text-[#FF8C00]">${row.English}</h2>
-                            <p class="text-gray-500 italic text-sm mb-2">${row.Traduzione || ''}</p>
+            rows.forEach(row => {
+                const cols = row.split(','); // Se usar ponto e vírgula na planilha, troque por ';'
+                if (cols.length >= 5) {
+                    const category = cols[1]; // Coluna B
+                    const english = cols[2];  // Coluna C
+                    const italian = cols[3];  // Coluna D
+                    const explain = cols[4];  // Coluna E
+                    const example = cols[5];  // Coluna F
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl shadow-md";
+                    card.innerHTML = `
+                        ${category ? `<span class="category-tag">${category}</span>` : ''}
+                        <h2 class="text-xl font-bold text-blue-600">${english}</h2>
+                        <p class="text-gray-500 italic mb-2">${italian}</p>
+                        <p class="text-gray-700 text-sm mb-3">${explain}</p>
+                        <div class="bg-blue-50 p-2 rounded border-l-4 border-blue-500 text-sm">
+                            <strong>Example:</strong> ${example}
                         </div>
-                        <button onclick="playAudio('${row.English}')" class="bg-orange-50 p-3 rounded-full text-[#FF8C00]">🔊</button>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-1 mb-2">${row['Spiegazione AI'] || ''}</p>
-                    <p class="mt-2 text-gray-700 italic border-l-2 border-orange-200 pl-3">"${row.Esempio || ''}"</p>
-                `;
-                listContainer.appendChild(card);
+                    `;
+                    container.appendChild(card);
+                }
             });
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('hidden');
         }
-
-        function playAudio(word) {
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(word)}`;
-            new Audio(url).play();
-        }
-        window.addEventListener('DOMContentLoaded', init);
+        loadContent();
     </script>
 </body>
 </html>
