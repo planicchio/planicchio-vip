@@ -6,167 +6,164 @@
     <title>Planicchio VIP 🚀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #FFF5EB; padding-bottom: 100px; }
-        .vip-quiz-container {
-            background: white; border: 3px solid #FF8C00; border-radius: 20px;
-            padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+        body { background-color: #FFF5EB; padding-bottom: 100px; font-family: sans-serif; }
+        
+        /* Container Premium VIP */
+        .vip-container {
+            background: white; border: 4px double #FF8C00; border-radius: 25px;
+            padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(255, 140, 0, 0.15);
         }
+        
         .btn-opcao {
             display: block; width: 100%; background: #fff; color: #FF8C00;
-            border: 2px solid #FF8C00; padding: 12px; margin: 10px 0;
-            border-radius: 12px; font-weight: bold; transition: 0.3s; text-align: left;
+            border: 2px solid #FF8C00; padding: 14px; margin: 12px 0;
+            border-radius: 15px; font-weight: bold; transition: 0.3s; text-align: left;
         }
-        .btn-opcao:hover { background: #FF8C00; color: white; }
-        .btn-proximo {
-            background: #FF8C00; color: white; padding: 12px;
-            border-radius: 10px; margin-top: 10px; font-weight: bold; width: 100%;
-        }
-        .category-tag {
-            display: inline-block; background: #FF8C00; color: white;
-            padding: 4px 12px; border-radius: 50px; font-size: 0.75rem;
-            font-weight: bold; margin-bottom: 10px; text-transform: uppercase;
-        }
+        .btn-opcao:hover { background: #FF8C00; color: white; transform: translateX(5px); }
+        
         .card-slang {
-            background: white; padding: 20px; border-radius: 15px;
-            border-left: 5px solid #FF8C00; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: white; padding: 20px; border-radius: 20px;
+            border-bottom: 4px solid #FF8C00; margin-bottom: 20px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
+
+        /* Botão SOS flutuante */
         .sos-button {
             position: fixed; bottom: 20px; right: 20px;
-            background: #FF8C00; color: white; padding: 15px 25px;
+            background: #25D366; color: white; padding: 15px 25px;
             border-radius: 50px; font-weight: bold; text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; display: flex; align-items: center; gap: 8px;
         }
-        .hidden { display: none; }
     </style>
 </head>
 <body class="p-5">
 
     <div class="max-w-md mx-auto">
-        <h1 class="text-3xl font-bold text-center mb-8 text-orange-600 font-sans">Planicchio VIP 🚀</h1>
+        <div class="flex justify-center mb-4">
+            <span class="bg-orange-500 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-widest">Accesso Illimitato VIP</span>
+        </div>
+        <h1 class="text-3xl font-black text-center mb-8 text-orange-600 italic">PLANICCHIO VIP</h1>
 
-        <div id="quiz-vip" class="vip-quiz-container">
-            <span class="category-tag">Daily Challenge</span>
-            <p id="pergunta-txt" class="font-bold text-lg mb-4 text-gray-800">Caricamento esercizio...</p>
+        <div id="quiz-vip" class="vip-container">
+            <p id="pergunta-txt" class="font-bold text-xl mb-6 text-gray-800 leading-tight italic">Caricamento esercizio...</p>
             <div id="opcoes-area"></div>
-            <div id="feedback-area" class="hidden mt-4 p-4 rounded bg-orange-100 border-l-4 border-orange-500">
-                <p id="feedback-txt" class="mb-3"></p>
-                <button onclick="proximaQuestao()" class="btn-proximo">Prossimo ➔</button>
+            <div id="feedback-area" class="hidden mt-6 p-5 rounded-xl bg-orange-100 border-l-8 border-orange-500">
+                <p id="feedback-txt" class="text-gray-800 mb-4 font-bold"></p>
+                <button onclick="proximaQuestao()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold shadow-lg">PROSSIMO ESERCIZIO ➔</button>
             </div>
         </div>
 
-        <hr class="border-orange-200 my-8">
-        <h2 class="text-xl font-bold mb-4 text-orange-700 italic">📚 Slang & Expressions</h2>
+        <h2 class="text-2xl font-black mb-6 text-orange-700 italic border-b-2 border-orange-200 pb-2">📚 Dizionario Completo</h2>
         
         <div id="slang-container" class="space-y-4">
-            <p id="loading-slang" class="text-center text-gray-400 italic">Caricamento dizionario...</p>
+            <p class="text-center text-gray-400 italic">Caricamento...</p>
         </div>
     </div>
 
-    <a href="https://wa.me/393716755981?text=Ciao%20Planicchio!%20Sono%20nel%20VIP%20e%20ho%20una%20domanda%20sugli%20esercizi." class="sos-button" target="_blank">
-        <span>🆘 SOS Planicchio</span>
+    <a href="https://wa.me/393716755981?text=Ciao%20Planicchio!%20Sono%20nel%20VIP%20e%20ho%20una%20domanda." class="sos-button">
+        <span>🆘 SOS SUPPORTO</span>
     </a>
 
     <script>
         const LINK_EX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=633031910&single=true&output=csv';
         const LINK_SL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
-
-        let exerciciosVip = [];
+        
+        let exerciciosVip = []; 
         let indexAtual = 0;
 
         const clean = (t) => t ? t.replace(/"/g, '').trim() : "";
 
-        // FUNÇÕES DE SOM (AGORA MAIS SEGURAS)
-        function tocaSom(tipo) {
-            const audio = new Audio(tipo === 'certo' 
-                ? 'https://www.soundjay.com/buttons/sounds/button-37.mp3' 
-                : 'https://www.soundjay.com/buttons/sounds/button-10.mp3');
-            audio.play().catch(() => console.log("Som bloqueado pelo navegador"));
+        // FUNÇÃO DE SOM REFORÇADA
+        function toca(url) {
+            try {
+                const audio = new Audio(url);
+                audio.play();
+            } catch(e) { console.log("Som bloqueado pelo navegador"); }
         }
 
         async function init() {
-            // CARREGAR EXERCÍCIOS
+            // Carregar Quiz
             try {
-                const resEx = await fetch(LINK_EX);
-                const dataEx = await resEx.text();
-                const rowsEx = dataEx.split(/\r?\n/).slice(1);
-                
-                exerciciosVip = rowsEx.map(row => {
+                const rEx = await fetch(LINK_EX);
+                const dEx = await rEx.text();
+                exerciciosVip = dEx.split(/\r?\n/).slice(1).map(row => {
                     const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    return {
-                        pergunta: clean(c[1]), a: clean(c[2]), b: clean(c[3]), c: clean(c[4]),
-                        correta: clean(c[5]).toLowerCase(), explica: clean(c[6]), status: clean(c[7]).toUpperCase()
+                    return { 
+                        pergunta: clean(c[1]), a: clean(c[2]), b: clean(c[3]), c: clean(c[4]), 
+                        correta: clean(c[5]).toLowerCase(), explica: clean(c[6]) 
                     };
-                }).filter(item => item.status === "VIP" || item.status === "VIP ");
+                }).filter(i => i.pergunta !== "");
+                showQuestao();
+            } catch(e) {}
 
-                if (exerciciosVip.length > 0) showQuestao();
-                else document.getElementById('pergunta-txt').innerText = "Nessun esercizio VIP trovato.";
-            } catch (e) { console.error("Errore Quiz:", e); }
-
-            // CARREGAR GÍRIAS (DE FORMA INDEPENDENTE)
+            // Carregar Gírias (Todas sem borrar)
             try {
-                const resSl = await fetch(LINK_SL);
-                const dataSl = await resSl.text();
-                const rowsSl = dataSl.split(/\r?\n/).slice(1);
+                const rSl = await fetch(LINK_SL);
+                const dSl = await rSl.text();
                 const container = document.getElementById('slang-container');
-                document.getElementById('loading-slang').remove();
-
-                rowsSl.forEach(row => {
+                container.innerHTML = "";
+                
+                dSl.split(/\r?\n/).slice(1).forEach(row => {
                     const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if (clean(c[2])) {
                         const div = document.createElement('div');
                         div.className = "card-slang";
                         div.innerHTML = `
-                            <h3 class="text-xl font-bold text-orange-600">${clean(c[2])}</h3>
-                            <p class="text-gray-500 italic mb-1">${clean(c[3])}</p>
-                            <p class="text-sm text-gray-700">${clean(c[4])}</p>
-                            <div class="mt-2 text-xs bg-orange-50 p-2 rounded"><strong>Example:</strong> ${clean(c[5])}</div>
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-bold text-orange-600 mb-1">${clean(c[2])}</h3>
+                                <button onclick="toca('https://www.soundjay.com/buttons/sounds/button-37.mp3')" class="text-2xl">🔊</button>
+                            </div>
+                            <p class="text-gray-500 italic text-sm mb-2">${clean(c[3])}</p>
+                            <p class="text-gray-700 font-medium mb-3">${clean(c[4])}</p>
+                            <div class="bg-orange-50 p-3 rounded-lg border-l-4 border-orange-300 text-xs italic">
+                                <b>Esempio:</b> ${clean(c[5])}
+                            </div>
                         `;
                         container.appendChild(div);
                     }
                 });
-            } catch (e) { console.error("Errore Slang:", e); }
+            } catch(e) {}
         }
 
         function showQuestao() {
+            if (indexAtual >= exerciciosVip.length) {
+                document.getElementById('quiz-vip').innerHTML = `
+                    <div class="text-center py-6">
+                        <p class="text-4xl mb-4">🏆</p>
+                        <h2 class="text-2xl font-bold">Incredibile!</h2>
+                        <p class="text-gray-600">Hai completato tutti gli esercizi disponibili!</p>
+                        <button onclick="indexAtual=0; showQuestao();" class="mt-4 text-orange-600 font-bold underline">Ricomincia</button>
+                    </div>`;
+                return;
+            }
             const item = exerciciosVip[indexAtual];
-            if(!item) return;
-            
             document.getElementById('pergunta-txt').innerText = item.pergunta;
             const area = document.getElementById('opcoes-area');
             area.innerHTML = '';
             document.getElementById('feedback-area').classList.add('hidden');
 
             ['a', 'b', 'c'].forEach(l => {
-                if (item[l]) {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-opcao';
-                    btn.innerText = item[l];
-                    btn.onclick = () => {
-                        const feedbackArea = document.getElementById('feedback-area');
-                        const txt = document.getElementById('feedback-txt');
-                        feedbackArea.classList.remove('hidden');
-                        
-                        if (l === item.correta) {
-                            tocaSom('certo');
-                            txt.innerHTML = "✅ <b>Ottimo!</b><br>" + item.explica;
-                            txt.className = "text-orange-600 font-bold";
-                        } else {
-                            tocaSom('errado');
-                            txt.innerHTML = "❌ <b>Sbagliato!</b> La corretta era la " + item.correta.toUpperCase();
-                            txt.className = "text-red-500 font-bold";
-                        }
-                    };
-                    area.appendChild(btn);
-                }
+                const btn = document.createElement('button');
+                btn.className = 'btn-opcao';
+                btn.innerText = item[l];
+                btn.onclick = () => {
+                    const feedback = document.getElementById('feedback-area');
+                    feedback.classList.remove('hidden');
+                    if (l === item.correta) {
+                        toca('https://www.soundjay.com/buttons/sounds/button-37.mp3');
+                        document.getElementById('feedback-txt').innerHTML = "🏆 ECCELLENTE!<br><span class='font-normal text-sm'>" + item.explica + "</span>";
+                        document.getElementById('feedback-txt').className = "text-orange-600 font-bold mb-4";
+                    } else {
+                        toca('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+                        document.getElementById('feedback-txt').innerHTML = "❌ SBAGLIATO!<br><span class='font-normal text-sm text-gray-600'>La risposta corretta era la " + item.correta.toUpperCase() + "</span>";
+                        document.getElementById('feedback-txt').className = "text-red-600 font-bold mb-4";
+                    }
+                };
+                area.appendChild(btn);
             });
         }
 
-        function proximaQuestao() {
-            indexAtual++;
-            if (indexAtual < exerciciosVip.length) showQuestao();
-            else document.getElementById('quiz-vip').innerHTML = "<div class='text-center py-4'><p class='text-4xl mb-2'>⭐</p><p class='font-bold text-orange-600 text-xl'>Esercizi completati!</p></div>";
-        }
+        function proximaQuestao() { indexAtual++; showQuestao(); }
 
         init();
     </script>
