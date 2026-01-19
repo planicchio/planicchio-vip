@@ -6,14 +6,10 @@
     <title>Planicchio VIP 🚀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #FFF5EB; }
+        body { background-color: #FFF5EB; padding-bottom: 80px; } /* Espaço para o botão SOS não cobrir nada */
         .vip-quiz-container {
-            background: white;
-            border: 3px solid #FF8C00;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+            background: white; border: 3px solid #FF8C00; border-radius: 20px;
+            padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
         }
         .btn-opcao {
             display: block; width: 100%; background: #fff; color: #FF8C00;
@@ -34,10 +30,23 @@
             background: white; padding: 20px; border-radius: 15px;
             border-left: 5px solid #FF8C00; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+        /* BOTÃO SOS PLANICCHIO */
+        .sos-button {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #FF8C00; color: white; padding: 15px 25px;
+            border-radius: 50px; font-weight: bold; text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .sos-button:hover { transform: scale(1.05); background: #e67e00; }
         .hidden { display: none; }
     </style>
 </head>
 <body class="p-5">
+
+    <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+    <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+
     <div class="max-w-md mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8 text-orange-600">Planicchio VIP 🚀</h1>
 
@@ -55,27 +64,25 @@
 
         <hr class="border-orange-200 my-8">
         <h2 class="text-xl font-bold mb-4 text-orange-700">📚 Slang & Expressions</h2>
-        
-        <div id="slang-container" class="space-y-4">
-            <p class="text-center text-gray-400">Caricamento dizionario...</p>
-        </div>
+        <div id="slang-container" class="space-y-4"></div>
     </div>
 
+    <a href="https://wa.me/393716755981?text=Oi%20Planicchio!%20Estou%20no%20VIP%20e%20fiquei%20com%20uma%20dúvida." class="sos-button" target="_blank">
+        <span>🆘 SOS Planicchio</span>
+    </a>
+
     <script>
-        // LINK DA ABA DE EXERCÍCIOS
         const LINK_EXERCICIOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=633031910&single=true&output=csv';
-        // LINK DA ABA DE GÍRIAS (VOLTANDO AO SEU LINK ORIGINAL)
         const LINK_GIRIAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
 
         let exerciciosVip = [];
         let indexAtual = 0;
 
-        // FUNÇÃO PARA LIMPAR TEXTO DO CSV
         const clean = (t) => t ? t.replace(/"/g, '').trim() : "";
 
         async function init() {
             try {
-                // 1. CARREGAR EXERCÍCIOS
+                // CARREGAR EXERCÍCIOS
                 const resEx = await fetch(LINK_EXERCICIOS);
                 const csvEx = await resEx.text();
                 const rowsEx = csvEx.split(/\r?\n/).slice(1);
@@ -89,68 +96,8 @@
                 }).filter(item => item.status === "VIP");
 
                 if (exerciciosVip.length > 0) showQuestao();
-                else document.getElementById('quiz-vip').innerHTML = "<p class='text-orange-500'>Nessun esercizio trovato. Controlla la colonna H.</p>";
 
-                // 2. CARREGAR GÍRIAS
+                // CARREGAR GÍRIAS
                 const resSl = await fetch(LINK_GIRIAS);
                 const csvSl = await resSl.text();
-                const rowsSl = csvSl.split(/\r?\n/).slice(1);
-                const container = document.getElementById('slang-container');
-                container.innerHTML = "";
-
-                rowsSl.forEach(row => {
-                    const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (clean(c[2])) { // Se tiver a palavra em inglês
-                        const div = document.createElement('div');
-                        div.className = "card-slang";
-                        div.innerHTML = `
-                            <h3 class="text-xl font-bold text-orange-600">${clean(c[2])}</h3>
-                            <p class="text-gray-500 italic mb-1">${clean(c[3])}</p>
-                            <p class="text-sm text-gray-700">${clean(c[4])}</p>
-                            <div class="mt-2 text-xs bg-orange-50 p-2 rounded"><strong>Ex:</strong> ${clean(c[5])}</div>
-                        `;
-                        container.appendChild(div);
-                    }
-                });
-
-            } catch (e) { console.error(e); }
-        }
-
-        function showQuestao() {
-            const item = exerciciosVip[indexAtual];
-            document.getElementById('pergunta-txt').innerText = item.pergunta;
-            const area = document.getElementById('opcoes-area');
-            area.innerHTML = '';
-            document.getElementById('feedback-area').classList.add('hidden');
-
-            ['a', 'b', 'c'].forEach(l => {
-                if (item[l]) {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-opcao';
-                    btn.innerText = item[l];
-                    btn.onclick = () => {
-                        document.getElementById('feedback-area').classList.remove('hidden');
-                        const txt = document.getElementById('feedback-txt');
-                        if (l === item.correta) {
-                            txt.innerHTML = "✅ <b>Ottimo!</b><br>" + item.explica;
-                            txt.className = "text-orange-600 font-bold";
-                        } else {
-                            txt.innerHTML = "❌ <b>Sbagliato!</b> La corretta era la " + item.correta.toUpperCase();
-                            txt.className = "text-red-500 font-bold";
-                        }
-                    };
-                    area.appendChild(btn);
-                }
-            });
-        }
-
-        function proximaQuestao() {
-            indexAtual++;
-            if (indexAtual < exerciciosVip.length) showQuestao();
-            else document.getElementById('quiz-vip').innerHTML = "<p class='text-center font-bold'>⭐ Esercizi completati!</p>";
-        }
-
-        init();
-    </script>
-</body>
-</html>
+                const rowsSl = csvSl.split(/\r
