@@ -42,13 +42,6 @@
 </head>
 <body class="p-5">
 
-    <audio id="sound-correct" preload="auto">
-        <source src="https://www.soundjay.com/buttons/sounds/button-37.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sound-wrong" preload="auto">
-        <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
-    </audio>
-
     <div class="max-w-md mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8 text-orange-600">Planicchio VIP 🚀</h1>
 
@@ -69,13 +62,19 @@
         </div>
     </div>
 
-    <a href="https://wa.me/393278216335?text=Ciao%20Planicchio!%20Sono%20nel%20VIP%20e%20ho%20una%20domanda%20sugli%20esercizi." class="sos-button" target="_blank">
+    <a href="https://wa.me/393716755981?text=Ciao%20Planicchio!%20Sono%20nel%20VIP%20e%20ho%20una%20domanda%20sugli%20esercizi." class="sos-button" target="_blank">
         <span>🆘 SOS Planicchio</span>
     </a>
 
     <script>
         const LINK_EX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=633031910&single=true&output=csv';
         const LINK_SL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
+
+        // SONS EMBUTIDOS (BASE64) - Não falham nunca
+        const sndCorrect = new Audio("data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YRAAAAAAnQCnAKcApwCnAKcApwCnAA=="); 
+        // Sons de sistema curtos
+        const playCorrect = () => { var a = new Audio("https://cdn.pixabay.com/audio/2021/08/04/audio_bbd17a3939.mp3"); a.play(); }
+        const playWrong = () => { var a = new Audio("https://cdn.pixabay.com/audio/2022/03/10/audio_c35278d30d.mp3"); a.play(); }
 
         let exerciciosVip = [];
         let indexAtual = 0;
@@ -84,7 +83,6 @@
 
         async function init() {
             try {
-                // Carregar Exercícios
                 const resEx = await fetch(LINK_EX);
                 const csvEx = await resEx.text();
                 const rowsEx = csvEx.split(/\r?\n/).slice(1);
@@ -98,7 +96,6 @@
 
                 if (exerciciosVip.length > 0) showQuestao();
 
-                // Carregar Gírias
                 const resSl = await fetch(LINK_SL);
                 const csvSl = await resSl.text();
                 const rowsSl = csvSl.split(/\r?\n/).slice(1);
@@ -124,42 +121,4 @@
 
         function showQuestao() {
             const item = exerciciosVip[indexAtual];
-            document.getElementById('pergunta-txt').innerText = item.pergunta;
-            const area = document.getElementById('opcoes-area');
-            area.innerHTML = '';
-            document.getElementById('feedback-area').classList.add('hidden');
-
-            ['a', 'b', 'c'].forEach(l => {
-                if (item[l]) {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-opcao';
-                    btn.innerText = item[l];
-                    btn.onclick = () => {
-                        const feedbackArea = document.getElementById('feedback-area');
-                        const txt = document.getElementById('feedback-txt');
-                        feedbackArea.classList.remove('hidden');
-                        if (l === item.correta) {
-                            document.getElementById('sound-correct').play().catch(()=>{});
-                            txt.innerHTML = "✅ <b>Ottimo!</b><br>" + item.explica;
-                            txt.className = "text-orange-600 font-bold";
-                        } else {
-                            document.getElementById('sound-wrong').play().catch(()=>{});
-                            txt.innerHTML = "❌ <b>Sbagliato!</b> La corretta era la " + item.correta.toUpperCase();
-                            txt.className = "text-red-500 font-bold";
-                        }
-                    };
-                    area.appendChild(btn);
-                }
-            });
-        }
-
-        function proximaQuestao() {
-            indexAtual++;
-            if (indexAtual < exerciciosVip.length) showQuestao();
-            else document.getElementById('quiz-vip').innerHTML = "<p class='text-center font-bold text-orange-600'>⭐ Esercizi completati!</p>";
-        }
-
-        init();
-    </script>
-</body>
-</html>
+            document.getElementById('pergunta
