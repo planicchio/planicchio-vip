@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planicchio VIP</title>
+    <title>Planicchio VIP 🚀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .category-tag {
-            /* Estilo para os Exercícios Laranja */
         .vip-quiz-container {
             background: white;
-            border: 2px solid #FF8C00;
-            border-radius: 15px;
+            border: 3px solid #FF8C00;
+            border-radius: 20px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
         }
         .btn-opcao {
             display: block;
@@ -21,11 +20,12 @@
             background: #fff;
             color: #FF8C00;
             border: 2px solid #FF8C00;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 12px;
             font-weight: bold;
             transition: 0.3s;
+            text-align: left;
         }
         .btn-opcao:hover {
             background: #FF8C00;
@@ -34,104 +34,82 @@
         .btn-proximo {
             background: #FF8C00;
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             margin-top: 10px;
             font-weight: bold;
+            width: 100%;
         }
+        .category-tag {
             display: inline-block;
-            background: #e2e8f0;
-            color: #475569;
-            padding: 2px 8px;
-            border-radius: 12px;
+            background: #FF8C00;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
             font-size: 0.75rem;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-transform: uppercase;
         }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="bg-gray-100 p-5">
+<body class="bg-orange-50 p-5">
     <div class="max-w-md mx-auto">
-        <h1 class="text-2xl font-bold text-center mb-6">Planicchio VIP 🚀</h1>
+        <h1 class="text-3xl font-bold text-center mb-8 text-orange-600">Planicchio VIP 🚀</h1>
+
         <div id="quiz-vip" class="vip-quiz-container">
-            <span class="category-tag" style="background: #FF8C00; color: white;">Daily Challenge</span>
+            <span class="category-tag">Daily Challenge</span>
             <div id="quiz-content">
-                <p id="pergunta-txt" class="font-bold text-lg mb-3">Caricamento esercizio...</p>
+                <p id="pergunta-txt" class="font-bold text-lg mb-4 text-gray-800">Caricamento...</p>
                 <div id="opcoes-area"></div>
             </div>
-            <div id="feedback-area" class="hidden mt-3 p-3 rounded bg-orange-50 text-sm">
-                <p id="feedback-txt" class="mb-2"></p>
-                <button onclick="proximaQuestao()" class="btn-proximo">Prossimo ➔</button>
+            <div id="feedback-area" class="hidden mt-4 p-4 rounded bg-orange-100 border-l-4 border-orange-500">
+                <p id="feedback-txt" class="text-gray-800 font-medium mb-3"></p>
+                <button onclick="proximaQuestao()" class="btn-proximo">Prossimo Esercizio ➔</button>
             </div>
         </div>
-        <div id="container" class="space-y-4">
-            </div>
     </div>
 
     <script>
-        // COLOQUE O SEU LINK DA PLANILHA (CSV) ENTRE AS ASPAS ABAIXO
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=541320303&single=true&output=csv';
+        // O LINK QUE VOCÊ ENVIOU
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=633031910&single=true&output=csv';
 
-        async function loadContent() {
-            const response = await fetch(SHEET_URL);
-            const data = await response.text();
-            const rows = data.split('\n').slice(1);
-            const container = document.getElementById('container');
-
-            rows.forEach(row => {
-                const cols = row.split(','); // Se usar ponto e vírgula na planilha, troque por ';'
-                if (cols.length >= 5) {
-                    const category = cols[1]; // Coluna B
-                    const english = cols[2];  // Coluna C
-                    const italian = cols[3];  // Coluna D
-                    const explain = cols[4];  // Coluna E
-                    const example = cols[5];  // Coluna F
-
-                    const card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-xl shadow-md";
-                    card.innerHTML = `
-                        ${category ? `<span class="category-tag">${category}</span>` : ''}
-                        <h2 class="text-xl font-bold text-blue-600">${english}</h2>
-                        <p class="text-gray-500 italic mb-2">${italian}</p>
-                        <p class="text-gray-700 text-sm mb-3">${explain}</p>
-                        <div class="bg-blue-50 p-2 rounded border-l-4 border-blue-500 text-sm">
-                            <strong>Example:</strong> ${example}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                }
-            });
-        }
-        loadContent();
- // LÓGICA DO QUIZ VIP
         let exerciciosVip = [];
         let indexAtual = 0;
 
-        // Esta função vai rodar dentro do seu loadContent atual
-        async function setupQuiz() {
-            const response = await fetch(SHEET_URL);
-            const text = await response.text();
-            // Transforma o CSV em objetos fáceis de ler
-            const linhas = text.split('\n').slice(1);
-            
-            exerciciosVip = linhas.map(row => {
-                const col = row.split(',');
-                return {
-                    id: col[0],
-                    pergunta: col[1], // Ajuste a letra da coluna se necessário
-                    a: col[2], b: col[3], c: col[4], 
-                    correta: col[5]?.trim().toLowerCase(),
-                    explica: col[6],
-                    status: col[7]?.trim()
-                };
-            }).filter(item => item.status === 'VIP');
+        async function loadQuiz() {
+            try {
+                const response = await fetch(SHEET_URL);
+                const data = await response.text();
+                
+                // Converte CSV para Array tratando possíveis problemas de aspas
+                const rows = data.split('\n').slice(1);
+                
+                exerciciosVip = rows.map(row => {
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Regex para não quebrar em vírgulas dentro de aspas
+                    return {
+                        pergunta: cols[1]?.replace(/"/g, ''),
+                        a: cols[2]?.replace(/"/g, ''),
+                        b: cols[3]?.replace(/"/g, ''),
+                        c: cols[4]?.replace(/"/g, ''),
+                        correta: cols[5]?.trim().toLowerCase(),
+                        explica: cols[6]?.replace(/"/g, ''),
+                        status: cols[7]?.trim()
+                    };
+                }).filter(item => item.status === 'VIP');
 
-            showQuestao();
+                if (exerciciosVip.length > 0) {
+                    showQuestao();
+                } else {
+                    document.getElementById('pergunta-txt').innerText = "Nessun esercizio VIP trovato.";
+                }
+            } catch (e) {
+                console.error("Errore:", e);
+            }
         }
 
         function showQuestao() {
-            if (exerciciosVip.length === 0) return;
             const item = exerciciosVip[indexAtual];
             document.getElementById('pergunta-txt').innerText = item.pergunta;
             const area = document.getElementById('opcoes-area');
@@ -148,10 +126,8 @@
                     feedback.classList.remove('hidden');
                     if(letra === item.correta) {
                         txt.innerHTML = "✅ <strong>Bravissimo!</strong> " + item.explica;
-                        txt.style.color = "#FF8C00";
                     } else {
-                        txt.innerHTML = "❌ <strong>Oops!</strong> La risposta correta era la " + item.correta.toUpperCase();
-                        txt.style.color = "#d97706";
+                        txt.innerHTML = "❌ <strong>Oops!</strong> La risposta corretta era la " + item.correta.toUpperCase();
                     }
                 };
                 area.appendChild(btn);
@@ -163,12 +139,11 @@
             if (indexAtual < exerciciosVip.length) {
                 showQuestao();
             } else {
-                document.getElementById('quiz-vip').innerHTML = "<p class='text-center font-bold'>⭐ Sessione completata! Torna domani.</p>";
+                document.getElementById('quiz-vip').innerHTML = "<p class='text-center font-bold text-orange-600'>⭐ Hai completato tutti gli esercizi VIP!</p>";
             }
         }
 
-        // Chame a função do quiz no final
-        setupQuiz();   </script>
+        loadQuiz();
+    </script>
 </body>
 </html>
-
