@@ -6,6 +6,7 @@
     <title>Planicchio VIP 🚀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        body { background-color: #FFF5EB; }
         .vip-quiz-container {
             background: white;
             border: 3px solid #FF8C00;
@@ -52,9 +53,10 @@
             text-transform: uppercase;
         }
         .hidden { display: none; }
+        #feedback-txt { line-height: 1.5; }
     </style>
 </head>
-<body class="bg-orange-50 p-5">
+<body class="p-5">
     <div class="max-w-md mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8 text-orange-600">Planicchio VIP 🚀</h1>
 
@@ -69,10 +71,11 @@
                 <button onclick="proximaQuestao()" class="btn-proximo">Prossimo Esercizio ➔</button>
             </div>
         </div>
+        
+        <p class="text-center text-gray-500 text-sm">Organizzato da Planicchio</p>
     </div>
 
     <script>
-        // O LINK QUE VOCÊ ENVIOU
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6-Ah6rq3hnBihlxVAzmsTD8rEF1rbGJu3__sBgm-DDyFWE_D7sxgJx3I3s55uiNl-qvP2x2wh0UD9/pub?gid=633031910&single=true&output=csv';
 
         let exerciciosVip = [];
@@ -83,29 +86,38 @@
                 const response = await fetch(SHEET_URL);
                 const data = await response.text();
                 
-                // Converte CSV para Array tratando possíveis problemas de aspas
-                const rows = data.split('\n').slice(1);
+                // Divide as linhas e limpa espaços vazios
+                const rows = data.split(/\r?\n/).filter(row => row.trim() !== "");
                 
-                exerciciosVip = rows.map(row => {
-                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Regex para não quebrar em vírgulas dentro de aspas
+                // Processa as linhas pulando o cabeçalho
+                exerciciosVip = rows.slice(1).map(row => {
+                    // Tenta dividir por vírgula respeitando aspas
+                    let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    
+                    // Se não dividiu certo, tenta por ponto e vírgula (comum em CSVs europeus/italianos)
+                    if (cols.length < 5) cols = row.split(';');
+
                     return {
-                        pergunta: cols[1]?.replace(/"/g, ''),
-                        a: cols[2]?.replace(/"/g, ''),
-                        b: cols[3]?.replace(/"/g, ''),
-                        c: cols[4]?.replace(/"/g, ''),
-                        correta: cols[5]?.trim().toLowerCase(),
-                        explica: cols[6]?.replace(/"/g, ''),
-                        status: cols[7]?.trim()
+                        pergunta: cols[1]?.replace(/"/g, '').trim(),
+                        a: cols[2]?.replace(/"/g, '').trim(),
+                        b: cols[3]?.replace(/"/g, '').trim(),
+                        c: cols[4]?.replace(/"/g, '').trim(),
+                        correta: cols[5]?.replace(/"/g, '').trim().toLowerCase(),
+                        explica: cols[6]?.replace(/"/g, '').trim(),
+                        status: cols[7]?.replace(/"/g, '').trim().toUpperCase()
                     };
                 }).filter(item => item.status === 'VIP');
+
+                console.log("Exercícios carregados:", exerciciosVip);
 
                 if (exerciciosVip.length > 0) {
                     showQuestao();
                 } else {
-                    document.getElementById('pergunta-txt').innerText = "Nessun esercizio VIP trovato.";
+                    document.getElementById('pergunta-txt').innerHTML = "⚠️ Esercizi non trovati.<br><span class='text-sm font-normal text-gray-500'>Assicurati che la colonna H della tabella 'Exercícios' contenga la scritta 'VIP'.</span>";
                 }
             } catch (e) {
                 console.error("Errore:", e);
+                document.getElementById('pergunta-txt').innerText = "Errore di connessione.";
             }
         }
 
@@ -117,33 +129,13 @@
             document.getElementById('feedback-area').classList.add('hidden');
 
             ['a', 'b', 'c'].forEach(letra => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-opcao';
-                btn.innerText = item[letra];
-                btn.onclick = () => {
-                    const feedback = document.getElementById('feedback-area');
-                    const txt = document.getElementById('feedback-txt');
-                    feedback.classList.remove('hidden');
-                    if(letra === item.correta) {
-                        txt.innerHTML = "✅ <strong>Bravissimo!</strong> " + item.explica;
-                    } else {
-                        txt.innerHTML = "❌ <strong>Oops!</strong> La risposta corretta era la " + item.correta.toUpperCase();
-                    }
-                };
-                area.appendChild(btn);
-            });
-        }
-
-        function proximaQuestao() {
-            indexAtual++;
-            if (indexAtual < exerciciosVip.length) {
-                showQuestao();
-            } else {
-                document.getElementById('quiz-vip').innerHTML = "<p class='text-center font-bold text-orange-600'>⭐ Hai completato tutti gli esercizi VIP!</p>";
-            }
-        }
-
-        loadQuiz();
-    </script>
-</body>
-</html>
+                if(item[letra]) { // Só cria o botão se a opção não estiver vazia
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-opcao';
+                    btn.innerText = item[letra];
+                    btn.onclick = () => {
+                        const feedback = document.getElementById('feedback-area');
+                        const txt = document.getElementById('feedback-txt');
+                        feedback.classList.remove('hidden');
+                        
+                        if(letra === item.correta) {
